@@ -10,11 +10,13 @@ using System.Linq;
 
 namespace AzureResourceAutoManagement
 {
+    //Shuts all running virtual machines down everyday at 1 AM unless they have been opted out
     public static class AutoVmShutdown
     {
         [FunctionName(nameof(AutoVmShutdown))]
         public static void Run([TimerTrigger("0 00 1 * * *"
 #if DEBUG 
+            //For debugging purposes, runs the function on first startup
             ,RunOnStartup =true 
 #endif
             )]TimerInfo myTimer, ILogger log)
