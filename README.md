@@ -1,2 +1,2 @@
 # AzureResourceCleanup
-Automatically cleans up azure resources using .NET fluent APIs
+Uses Azure Timer Function to turn off all running VMs daily using the .NET Fluent APIs
