@@ -21,7 +21,7 @@ namespace AzureResourceAutoManagement
             _callingFunction = callingFunction;
         }
 
-        public DateTime LocalNow
+        private DateTime LocalNow
         {
             get
             {
@@ -55,17 +55,19 @@ namespace AzureResourceAutoManagement
         {
             string setting = Environment.GetEnvironmentVariable(settingName, EnvironmentVariableTarget.Process);
 
+#if Debug
+            //Assume running locally with a debug build and try to get the secret from the local file if it's not present in the environment
             if(setting == null)
             {
                 setting = LocalSecretStore.GetLocalSecret(settingName);
             }
-
+#endif
             return setting;
         }
 
         public void LogMessage(string message)
         {
-            _logger.LogInformation($"{nameof(ShutdownVmsOnSchedule)}: {message}");
+            _logger.LogInformation($"{nameof(ShutdownVmsOnSchedule)}: {message}. Time: {LocalNow}");
         }
 
     }

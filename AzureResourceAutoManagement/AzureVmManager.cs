@@ -52,15 +52,25 @@ namespace AzureResourceAutoManagement
 
         internal async Task<string> GetVmStatusAsync(string name)
         {
+            _helper.LogMessage($"Starting");
+
+            string returnMessage;
             IVirtualMachine machine = await GetVmByNameAsync(name);
             PowerState powerState = machine.PowerState;
-            
-            if(powerState == PowerState.Running)
+
+            if (powerState == PowerState.Running)
             {
                 IPublicIPAddress ipAddress = machine.GetPrimaryPublicIPAddress();
-                return $"{powerState}, IP Address: {ipAddress.IPAddress}";
+                returnMessage = $"{powerState}, IP Address: {ipAddress.IPAddress}";
             }
-            return $"Machine status: {powerState}";
+            else
+            {
+                returnMessage = $"Machine status: {powerState}";
+            }
+
+            _helper.LogMessage($"Finished");
+
+            return returnMessage;
         }
 
         private async Task<IPagedCollection<IVirtualMachine>> GetVirtualMachinesAsync()
@@ -93,7 +103,7 @@ namespace AzureResourceAutoManagement
 
         internal async Task ShutdownRunningVmsAsync()
         {
-            _helper.LogMessage($"Starting at {_helper.LocalNow}");
+            _helper.LogMessage($"Starting");
 
             var list = await GetVirtualMachinesAsync();
 
@@ -116,27 +126,34 @@ namespace AzureResourceAutoManagement
                 }
             }
 
-            _helper.LogMessage($"Completing at {_helper.LocalNow}");
+            _helper.LogMessage($"Finished");
         }
 
         internal async Task<string> StartVirtualMachineAsync(string name)
         {
+            _helper.LogMessage($"Starting");
+
+            string returnMessage;
             IVirtualMachine machine = await GetVmByNameAsync(name);
             if (machine.PowerState == PowerState.Deallocated || machine.PowerState == PowerState.Stopped)
             {
                 //This will take a while, let it run async and continue
                 machine.StartAsync();
-                return $"Machine is starting, original state was {machine.PowerState}";
+                returnMessage = $"Machine is starting, original state was {machine.PowerState}";
             }
             else if (machine.PowerState == PowerState.Running)
             {
                 IPublicIPAddress ipAddress = machine.GetPrimaryPublicIPAddress();
-                return $"Machine is already running, IP address is {ipAddress.IPAddress}";
+                returnMessage = $"Machine is already running, IP address is {ipAddress.IPAddress}";
             }
             else
             {
-                return $"No action taken, machine state is: {machine.PowerState}";
+                returnMessage = $"No action taken, machine state is: {machine.PowerState}";
             }
+
+            _helper.LogMessage("Finished");
+
+            return returnMessage;
         }
     }
 }
