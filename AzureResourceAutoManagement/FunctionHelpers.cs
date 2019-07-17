@@ -16,8 +16,9 @@ namespace AzureResourceAutoManagement
         private ILogger _logger;
         private string _callingFunction;
 
-        public FunctionHelpers(string callingFunction)
+        public FunctionHelpers(string callingFunction, ILogger logger)
         {
+            _logger = logger;
             _callingFunction = callingFunction;
         }
 
@@ -55,7 +56,7 @@ namespace AzureResourceAutoManagement
         {
             string setting = Environment.GetEnvironmentVariable(settingName, EnvironmentVariableTarget.Process);
 
-#if Debug
+#if DEBUG
             //Assume running locally with a debug build and try to get the secret from the local file if it's not present in the environment
             if(setting == null)
             {

@@ -23,7 +23,7 @@ namespace AzureResourceAutoManagement
         protected AzureVmManager(string callingFunction, ILogger logger)
         {
             _logger = logger;
-            _helper = new FunctionHelpers(callingFunction);
+            _helper = new FunctionHelpers(callingFunction, logger);
         }
 
         public static AzureVmManager CreateVmManagerInstance(string callingFunction, ILogger logger)
