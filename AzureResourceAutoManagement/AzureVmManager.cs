@@ -16,19 +16,17 @@ namespace AzureResourceAutoManagement
     {
         private const string OptedOutVmsSettingName = "OptedOutVms";
 
-        ILogger _logger;
         IAzure _azure;
         FunctionHelpers _helper;
 
-        protected AzureVmManager(string callingFunction, ILogger logger)
+        protected AzureVmManager(FunctionHelpers helper)
         {
-            _logger = logger;
-            _helper = new FunctionHelpers(callingFunction, logger);
+            _helper = helper;
         }
 
-        public static AzureVmManager CreateVmManagerInstance(string callingFunction, ILogger logger)
+        public static AzureVmManager CreateVmManagerInstance(FunctionHelpers helper)
         {
-            AzureVmManager vmManager = new AzureVmManager(callingFunction, logger);
+            AzureVmManager vmManager = new AzureVmManager(helper);
             vmManager.InitializeAzureConnection();
             return vmManager;
         }
@@ -73,7 +71,7 @@ namespace AzureResourceAutoManagement
             return returnMessage;
         }
 
-        private async Task<IPagedCollection<IVirtualMachine>> GetVirtualMachinesAsync()
+        internal async Task<IPagedCollection<IVirtualMachine>> GetVirtualMachinesAsync()
         {
             return await _azure.VirtualMachines.ListAsync();
         }
@@ -117,8 +115,10 @@ namespace AzureResourceAutoManagement
                 {
                     _helper.LogMessage($"Powering off {vm.Name} async");
 
-                    //Don't need to leave the function running while the machine shutsdown as this can take a while so do not await this call
+
+#pragma warning disable CS4014 //Don't need to leave the function running while the machine shutsdown as this can take a while so do not await this call
                     vm.PowerOffAsync();
+#pragma warning restore CS4014
                 }
                 else
                 {
@@ -135,10 +135,17 @@ namespace AzureResourceAutoManagement
 
             string returnMessage;
             IVirtualMachine machine = await GetVmByNameAsync(name);
-            if (machine.PowerState == PowerState.Deallocated || machine.PowerState == PowerState.Stopped)
+
+            if (machine == null)
             {
-                //This will take a while, let it run async and continue
+                returnMessage = $"No machine named {name} was found";
+            }
+            else if (machine.PowerState == PowerState.Deallocated || machine.PowerState == PowerState.Stopped)
+            {
+
+#pragma warning disable CS4014 //This will take a while, let it run async and continue no need to await it
                 machine.StartAsync();
+#pragma warning restore CS4014 
                 returnMessage = $"Machine is starting, original state was {machine.PowerState}";
             }
             else if (machine.PowerState == PowerState.Running)

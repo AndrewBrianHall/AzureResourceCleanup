@@ -3,6 +3,8 @@ using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
 using AzureResourceAutoManagement.Functions;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Extensions.Configuration;
 
 namespace AzureResourceAutoManagement
 {
@@ -15,11 +17,19 @@ namespace AzureResourceAutoManagement
 
         private ILogger _logger;
         private string _callingFunction;
+        private IConfigurationRoot _config;
 
-        public FunctionHelpers(string callingFunction, ILogger logger)
+        public FunctionHelpers(string callingFunction, ILogger logger, ExecutionContext context)
         {
             _logger = logger;
             _callingFunction = callingFunction;
+
+            _config = new ConfigurationBuilder()
+                .SetBasePath(context.FunctionAppDirectory)
+                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("secret.settings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .Build();
         }
 
         private DateTime LocalNow
@@ -54,15 +64,8 @@ namespace AzureResourceAutoManagement
 
         public string GetEnvironmentSetting(string settingName)
         {
-            string setting = Environment.GetEnvironmentVariable(settingName, EnvironmentVariableTarget.Process);
+            string setting = _config[settingName];
 
-#if DEBUG
-            //Assume running locally with a debug build and try to get the secret from the local file if it's not present in the environment
-            if(setting == null)
-            {
-                setting = LocalSecretStore.GetLocalSecret(settingName);
-            }
-#endif
             return setting;
         }
 

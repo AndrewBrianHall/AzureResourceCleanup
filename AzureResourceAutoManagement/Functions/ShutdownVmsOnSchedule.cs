@@ -14,9 +14,13 @@ namespace AzureResourceAutoManagement.Functions
 #if DEBUG 
             //,RunOnStartup =true 
 #endif
-            )]TimerInfo myTimer, ILogger log)
+            )]TimerInfo myTimer, 
+            ILogger log,
+            ExecutionContext context)
         {
-            AzureVmManager vmManager = AzureVmManager.CreateVmManagerInstance(nameof(ShutdownVmsOnSchedule), log);
+            FunctionHelpers helper = new FunctionHelpers(nameof(GetVmStatus), log, context);
+            AzureVmManager vmManager = AzureVmManager.CreateVmManagerInstance(helper);
+
             await vmManager.ShutdownRunningVmsAsync();
         }
 

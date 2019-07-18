@@ -12,7 +12,8 @@ namespace AzureResourceAutoManagement.Functions
         [FunctionName(nameof(StartVirtualMachine))]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
-            ILogger log)
+            ILogger log,
+            ExecutionContext context)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
@@ -23,7 +24,8 @@ namespace AzureResourceAutoManagement.Functions
                 return new BadRequestObjectResult("Please pass the VM name on the query string as \"name=[virtual-machine-name]\"");
             }
 
-            AzureVmManager vmManager = AzureVmManager.CreateVmManagerInstance(nameof(StartVirtualMachine), log);
+            FunctionHelpers helper = new FunctionHelpers(nameof(GetVmStatus), log, context);
+            AzureVmManager vmManager = AzureVmManager.CreateVmManagerInstance(helper);
             string status = await vmManager.StartVirtualMachineAsync(name);
 
             return new OkObjectResult(status);
