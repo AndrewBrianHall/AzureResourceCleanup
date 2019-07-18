@@ -5,6 +5,7 @@ using Microsoft.Azure.Management.ResourceManager.Fluent;
 using AzureResourceAutoManagement.Functions;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
+using System.IO;
 
 namespace AzureResourceAutoManagement
 {
@@ -24,10 +25,11 @@ namespace AzureResourceAutoManagement
             _logger = logger;
             _callingFunction = callingFunction;
 
+            string basePath = Path.Combine(context.FunctionAppDirectory, @"..\..\..");
             _config = new ConfigurationBuilder()
-                .SetBasePath(context.FunctionAppDirectory)
+                .SetBasePath(basePath)
                 .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("secret.settings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("local.secrets.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
         }
