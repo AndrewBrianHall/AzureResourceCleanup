@@ -61,9 +61,9 @@ namespace AzureResourceAutoManagement
         }
 
 
-        private static string GetFormTemplate(string basePath)
+        private static string GetWebContentFile(string basePath, string fileName)
         {
-            string file = Path.Combine(basePath, "Html", ChangeStateFormFile);
+            string file = Path.Combine(basePath, "Html", fileName);
             string contents;
             using (var reader = new StreamReader(file))
             {
@@ -75,14 +75,17 @@ namespace AzureResourceAutoManagement
 
         string GetStartForm(string basePath)
         {
-            string contents = GetFormTemplate(basePath);
+            string contents = GetWebContentFile(basePath, ChangeStateFormFile);
             return string.Format(contents, nameof(StartVm), _machine.Name, "Start");
         }
 
         string GetStopForm(string basePath)
         {
-            string contents = GetFormTemplate(basePath);
-            return string.Format(contents, nameof(StopVm), _machine.Name, "Stop");
+            string contents = GetWebContentFile(basePath, ChangeStateFormFile);
+            string script = GetWebContentFile(basePath, "scripts.js");
+            string completeForm = string.Format(contents, nameof(StopVm), _machine.Name, "Stop", script, this.DnsName);
+
+            return completeForm;
         }
 
 

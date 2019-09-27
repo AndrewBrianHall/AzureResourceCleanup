@@ -1,4 +1,12 @@
-﻿<form action="{0}" method="post">
+﻿<div id="dnsName">{4}</div>
+<div onclick="copyTextToClipboard('dnsName')">copy</div>
+<form action="{0}" method="post">
     <input type="hidden" name="vmname" value="{1}">
     <input type="submit" value="{2}">
 </form>
+<textarea id="contentToCopy" style="visibility:collapse"></textarea>
+
+<script>
+    {3}
+</script>
+
