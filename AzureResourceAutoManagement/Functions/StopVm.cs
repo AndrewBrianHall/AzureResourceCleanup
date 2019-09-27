@@ -15,24 +15,25 @@ namespace AzureResourceAutoManagement.Functions
         [FunctionName("StopVm")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
-            ILogger log)
+            ILogger log,
+            ExecutionContext context)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
-
-            string name = req.Query["name"];
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             string[] values = requestBody.Split('=');
             string vmName = null;
+            bool success = false;
             if (values[0] == "vmname")
             {
                 vmName = values[1];
+                FunctionHelpers helper = new FunctionHelpers(nameof(GetVms), log, context);
+                AzureVmManager vmManager = AzureVmManager.CreateVmManagerInstance(helper);
+                success = await vmManager.ShutdownVmAsync(vmName);
             }
 
-
-
-            return vmName != null
-                ? (ActionResult)new OkObjectResult($"Stop {vmName}")
+            return success
+                ? (ActionResult)new OkObjectResult($"Stopping {vmName}")
                 : new BadRequestObjectResult("Submit the expected form");
         }
     }

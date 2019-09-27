@@ -129,6 +129,20 @@ namespace AzureResourceAutoManagement
             _helper.LogMessage($"Finished");
         }
 
+        internal async Task<bool> ShutdownVmAsync(string name)
+        {
+            var list = await GetVirtualMachinesAsync();
+            var vm = list.Where(v => v.Name == name).FirstOrDefault();
+
+            if (vm != null)
+            {
+                vm.PowerOffAsync();
+                return true;
+            }
+
+            return false;
+        }
+
         internal async Task<string> StartVirtualMachineAsync(string name)
         {
             _helper.LogMessage($"Starting");
