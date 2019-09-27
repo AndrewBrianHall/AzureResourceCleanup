@@ -9,20 +9,20 @@ namespace AzureResourceAutoManagement.Functions
 {
     public class ShutdownVmsOnSchedule
     {
-        [FunctionName(nameof(ShutdownVmsOnSchedule))]
-        public static async Task Run([TimerTrigger("0 00 1 * * *"
-#if DEBUG 
-            //,RunOnStartup =true 
-#endif
-            )]TimerInfo myTimer, 
-            ILogger log,
-            ExecutionContext context)
-        {
-            FunctionHelpers helper = new FunctionHelpers(nameof(ShutdownVmsOnSchedule), log, context);
-            AzureVmManager vmManager = AzureVmManager.CreateVmManagerInstance(helper);
+//        [FunctionName(nameof(ShutdownVmsOnSchedule))]
+//        public static async Task Run([TimerTrigger("0 00 1 * * *"
+//#if DEBUG 
+//            //,RunOnStartup =true 
+//#endif
+//            )]TimerInfo myTimer, 
+//            ILogger log,
+//            ExecutionContext context)
+//        {
+//            FunctionHelpers helper = new FunctionHelpers(nameof(ShutdownVmsOnSchedule), log, context);
+//            AzureVmManager vmManager = AzureVmManager.CreateVmManagerInstance(helper);
 
-            await vmManager.ShutdownRunningVmsAsync();
-        }
+//            await vmManager.ShutdownRunningVmsAsync();
+//        }
 
     }
 }

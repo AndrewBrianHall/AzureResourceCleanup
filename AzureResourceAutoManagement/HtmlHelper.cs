@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Azure.Management.Compute.Fluent;
 using Microsoft.Azure.Management.Network.Fluent;
 
@@ -7,23 +9,61 @@ namespace AzureResourceAutoManagement
     public class HtmlHelper
     {
         private const string PortalUrlBase = "https://portal.azure.com/#resource";
+        private const string ChangeStateFormFile = "ChangeStateForm.html";
 
-        public static string GetVmEntryDiv(IVirtualMachine machine)
+        public string IpAddress { get; protected set; }
+        public string DnsName { get; protected set; }
+        public string DisplayPowerState { get; protected set; }
+        public string ManagementLink { get; protected set; }
+
+        IVirtualMachine _machine { get; set; }
+
+        protected HtmlHelper(IVirtualMachine machine)
+        {
+            _machine = machine;
+        }
+
+        public static HtmlHelper GetVmEntryDiv(IVirtualMachine machine)
+        {
+            HtmlHelper helper = new HtmlHelper(machine);
+
+            helper.DisplayPowerState = FormatPowerState(machine.PowerState);
+            helper.ManagementLink = GetManagementLink(machine);
+
+
+            IPublicIPAddress ipAddress = machine.GetPrimaryPublicIPAddress();
+            helper.IpAddress = ipAddress.IPAddress;
+            helper.DnsName = ipAddress.Inner.DnsSettings.Fqdn;
+
+            return helper;
+        }
+
+        public string GetHtml(string functionBasePath)
         {
             StringBuilder finalDiv = new StringBuilder("<div>");
-            string powerState = FormatPowerState(machine.PowerState);
-            string managementLink = GetManagementLink(machine);
 
-            finalDiv.Append($"{machine.Name} ({powerState})");
-            if(machine.PowerState == PowerState.Running)
+            finalDiv.Append($"{this._machine.Name} ({this.DisplayPowerState})");
+            if (_machine.PowerState == PowerState.Running)
             {
-                IPublicIPAddress ipAddress = machine.GetPrimaryPublicIPAddress();
-                finalDiv.Append($" IP Address: {ipAddress.IPAddress}");
+                finalDiv.Append($" IP Address: {this.IpAddress}");
+                finalDiv.Append(GetStopForm(functionBasePath));
             }
-            finalDiv.Append($" {managementLink}</div>");
+            finalDiv.Append($" {this.ManagementLink}</div>");
 
             return finalDiv.ToString();
         }
+
+        string GetStopForm(string basePath)
+        {
+            string file = Path.Combine(basePath, "Html", ChangeStateFormFile);
+            string contents;
+            using(var reader = new StreamReader(file))
+            {
+                contents = reader.ReadToEnd();
+            }
+            return string.Format(contents, "StopVm", _machine.Name, "Stop");
+        }
+
 
         public static string GetManagementLink(IVirtualMachine machine)
         {

@@ -19,15 +19,16 @@ namespace AzureResourceAutoManagement
         private ILogger _logger;
         private string _callingFunction;
         private IConfigurationRoot _config;
+        public string BasePath { get; protected set; }
 
         public FunctionHelpers(string callingFunction, ILogger logger, ExecutionContext context)
         {
             _logger = logger;
             _callingFunction = callingFunction;
 
-            string basePath = Path.Combine(context.FunctionAppDirectory, @"..\..\..");
+            this.BasePath = Path.Combine(context.FunctionAppDirectory, @"..\..\..");
             _config = new ConfigurationBuilder()
-                .SetBasePath(basePath)
+                .SetBasePath(BasePath)
                 .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("local.secrets.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
@@ -75,6 +76,5 @@ namespace AzureResourceAutoManagement
         {
             _logger.LogInformation($"{nameof(ShutdownVmsOnSchedule)}: {message}. Time: {LocalNow}");
         }
-
     }
 }
