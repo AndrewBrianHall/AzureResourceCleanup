@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using AzureResourceAutoManagement.Functions;
 using Microsoft.Azure.Management.Compute.Fluent;
 using Microsoft.Azure.Management.Network.Fluent;
 
@@ -48,20 +49,39 @@ namespace AzureResourceAutoManagement
                 finalDiv.Append($" IP Address: {this.IpAddress}");
                 finalDiv.Append(GetStopForm(functionBasePath));
             }
+            else if(_machine.PowerState == PowerState.Deallocated || _machine.PowerState == PowerState.Stopped)
+            {
+                finalDiv.Append(GetStartForm(functionBasePath));
+            }
+
             finalDiv.Append($" {this.ManagementLink}</div>");
 
             return finalDiv.ToString();
         }
 
-        string GetStopForm(string basePath)
+
+        private static string GetFormTemplate(string basePath)
         {
             string file = Path.Combine(basePath, "Html", ChangeStateFormFile);
             string contents;
-            using(var reader = new StreamReader(file))
+            using (var reader = new StreamReader(file))
             {
                 contents = reader.ReadToEnd();
             }
-            return string.Format(contents, "StopVm", _machine.Name, "Stop");
+
+            return contents;
+        }
+
+        string GetStartForm(string basePath)
+        {
+            string contents = GetFormTemplate(basePath);
+            return string.Format(contents, nameof(StartVm), _machine.Name, "Start");
+        }
+
+        string GetStopForm(string basePath)
+        {
+            string contents = GetFormTemplate(basePath);
+            return string.Format(contents, nameof(StopVm), _machine.Name, "Stop");
         }
 
 

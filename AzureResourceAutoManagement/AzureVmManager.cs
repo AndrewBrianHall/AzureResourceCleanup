@@ -136,7 +136,9 @@ namespace AzureResourceAutoManagement
 
             if (vm != null)
             {
+#pragma warning disable CS4014 //This will take a while, let it run async and continue no need to await it
                 vm.PowerOffAsync();
+#pragma warning restore CS4014 
                 return true;
             }
 
