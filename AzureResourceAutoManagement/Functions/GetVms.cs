@@ -28,7 +28,7 @@ namespace AzureResourceAutoManagement.Functions
             foreach (var machine in machines)
             {
                 HtmlHelper vmHtml = HtmlHelper.GetVmEntryDiv(machine);
-                sb.Append(vmHtml.GetHtml(helper.BasePath));
+                sb.Append(vmHtml.GetHtml(context.FunctionAppDirectory));
             }
 
             var result = new ContentResult

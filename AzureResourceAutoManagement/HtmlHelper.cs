@@ -26,10 +26,11 @@ namespace AzureResourceAutoManagement
 
         public static HtmlHelper GetVmEntryDiv(IVirtualMachine machine)
         {
-            HtmlHelper helper = new HtmlHelper(machine);
-
-            helper.DisplayPowerState = FormatPowerState(machine.PowerState);
-            helper.ManagementLink = GetManagementLink(machine);
+            HtmlHelper helper = new HtmlHelper(machine)
+            {
+                DisplayPowerState = FormatPowerState(machine.PowerState),
+                ManagementLink = GetManagementLink(machine)
+            };
 
 
             IPublicIPAddress ipAddress = machine.GetPrimaryPublicIPAddress();

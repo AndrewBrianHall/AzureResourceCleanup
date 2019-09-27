@@ -19,16 +19,15 @@ namespace AzureResourceAutoManagement
         private ILogger _logger;
         private string _callingFunction;
         private IConfigurationRoot _config;
-        public string BasePath { get; protected set; }
 
         public FunctionHelpers(string callingFunction, ILogger logger, ExecutionContext context)
         {
             _logger = logger;
             _callingFunction = callingFunction;
 
-            this.BasePath = Path.Combine(context.FunctionAppDirectory, @"..\..\..");
+           string localRootPath = Path.Combine(context.FunctionAppDirectory, @"..\..\..");
             _config = new ConfigurationBuilder()
-                .SetBasePath(BasePath)
+                .SetBasePath(localRootPath)
                 .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("local.secrets.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
