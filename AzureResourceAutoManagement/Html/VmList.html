@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        .visible{
+            visibility: visible;
+        }
+        .hidden{
+            visibility: hidden;
+        }
+        img.copy{
+            height: 12px;
+            width: 12px;
+            margin-left: 5px;
+        }
+        span.item-display{
+            
+            color: darkblue;
+        }
+        input.submit-button{
+            margin-left: 25px;
+        }
+        div.machine-name{
+            font-weight: bold;
+        }
+        div.machine-section{
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+        footer{
+            font-size: 9px;
+            position: absolute;
+            bottom: 15px;
+        }
+        table{
+            margin-left: 25px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        Refresh page to see state changes
+    </div>
+    <br />
+    <div>
+        {{main-content}}
+    </div>
+
+    <textarea id="contentToCopy" style="visibility:collapse"></textarea>
+    <script>
+        function copyTextToClipboard(elementName) {
+            var textToCopy = document.getElementById(elementName)
+            var copyText = document.getElementById('contentToCopy');
+            copyText.value = textToCopy.innerText;
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+
+            /* Copy the text inside the text field */
+            document.execCommand("copy");
+        }
+    </script>
+    <footer><a href="https://icons8.com/icon/XrLbcGHEeEFr/copy">Copy icon by Icons8</a></footer>
+</body>
+</html>

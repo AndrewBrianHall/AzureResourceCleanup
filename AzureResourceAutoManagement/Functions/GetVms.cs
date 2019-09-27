@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Text;
+using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
+using Microsoft.Azure.Management.Compute.Fluent;
+using System.Collections.Generic;
 
 namespace AzureResourceAutoManagement.Functions
 {
@@ -21,25 +24,20 @@ namespace AzureResourceAutoManagement.Functions
         {
             FunctionHelpers helper = new FunctionHelpers(nameof(GetVms), log, context);
             AzureVmManager vmManager = AzureVmManager.CreateVmManagerInstance(helper);
-            var machines = await vmManager.GetVirtualMachinesAsync();
+            IPagedCollection<IVirtualMachine> machines = await vmManager.GetVirtualMachinesAsync();
 
-            StringBuilder sb = new StringBuilder();
             
-            foreach (var machine in machines)
-            {
-                HtmlHelper vmHtml = HtmlHelper.GetVmEntryDiv(machine);
-                sb.Append(vmHtml.GetHtml(context.FunctionAppDirectory));
-            }
+            VmHtmlMaker vmHtmlMaker = new VmHtmlMaker(context.FunctionAppDirectory, req);
+            string html = vmHtmlMaker.GetHtml(machines);
 
             var result = new ContentResult
             {
-                Content = sb.ToString(),
+                Content = html,
                 ContentType = "text/html"
             };
 
             return result;
         }
-
     }
 
 }

@@ -73,7 +73,12 @@ namespace AzureResourceAutoManagement
 
         public void LogMessage(string message)
         {
-            _logger.LogInformation($"{nameof(ShutdownVmsOnSchedule)}: {message}. Time: {LocalNow}");
+            _logger.LogInformation($"{_callingFunction}: {message}. Time: {LocalNow}");
+        }
+
+        public void LogMessage(string message, ILogger log)
+        {
+            log.LogInformation($"{_callingFunction}: {message}");
         }
     }
 }

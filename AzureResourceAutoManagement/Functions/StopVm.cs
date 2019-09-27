@@ -24,17 +24,30 @@ namespace AzureResourceAutoManagement.Functions
             string[] values = requestBody.Split('=');
             string vmName = null;
             bool success = false;
+            string message;
             if (values[0] == "vmname")
             {
                 vmName = values[1];
                 FunctionHelpers helper = new FunctionHelpers(nameof(GetVms), log, context);
                 AzureVmManager vmManager = AzureVmManager.CreateVmManagerInstance(helper);
                 success = await vmManager.ShutdownVmAsync(vmName);
+                message = $"{vmName} is stopping";
+            }
+            else
+            {
+                message = "submit expected form";
             }
 
-            return success
-                ? (ActionResult)new OkObjectResult($"Stopping {vmName}")
-                : new BadRequestObjectResult("Submit the expected form");
+            VmHtmlMaker htmlMaker = new VmHtmlMaker(context.FunctionAppDirectory, req);
+            string html = htmlMaker.GetStateChangedPage(message);
+
+
+            return
+                new ContentResult
+                {
+                    Content = html,
+                    ContentType = "text/html"
+                };
         }
     }
 }

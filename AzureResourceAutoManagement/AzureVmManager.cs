@@ -147,8 +147,6 @@ namespace AzureResourceAutoManagement
 
         internal async Task<string> StartVirtualMachineAsync(string name)
         {
-            _helper.LogMessage($"Starting");
-
             string returnMessage;
             IVirtualMachine machine = await GetVmByNameAsync(name);
 
@@ -162,7 +160,7 @@ namespace AzureResourceAutoManagement
 #pragma warning disable CS4014 //This will take a while, let it run async and continue no need to await it
                 machine.StartAsync();
 #pragma warning restore CS4014 
-                returnMessage = $"Machine is starting, original state was {machine.PowerState}";
+                returnMessage = $"{name} is starting, original state was {VmHtmlMaker.FormatPowerState(machine.PowerState)}";
             }
             else if (machine.PowerState == PowerState.Running)
             {
@@ -171,10 +169,10 @@ namespace AzureResourceAutoManagement
             }
             else
             {
-                returnMessage = $"No action taken, machine state is: {machine.PowerState}";
+                returnMessage = $"No action taken, machine state is: {VmHtmlMaker.FormatPowerState(machine.PowerState)}";
             }
 
-            _helper.LogMessage("Finished");
+            //_helper.LogMessage("Finished");
 
             return returnMessage;
         }

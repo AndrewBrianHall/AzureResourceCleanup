@@ -14,11 +14,11 @@ namespace AzureResourceAutoManagement.Functions
     {
         [FunctionName("StartVm")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log,
             ExecutionContext context)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            log.LogInformation($"{nameof(StartVm)} function processed a request.");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             string[] values = requestBody.Split('=');
@@ -32,7 +32,15 @@ namespace AzureResourceAutoManagement.Functions
                 startMessage = await vmManager.StartVirtualMachineAsync(vmName);
             }
 
-            return (ActionResult)new OkObjectResult($"{startMessage}");
+            VmHtmlMaker htmlMaker = new VmHtmlMaker(context.FunctionAppDirectory, req);
+            string html = htmlMaker.GetStateChangedPage(startMessage);
+
+            return
+                new ContentResult
+                {
+                    Content = html,
+                    ContentType = "text/html"
+                };
         }
     }
 }

@@ -1,12 +1,35 @@
-﻿<div id="dnsName">{4}</div>
-<div onclick="copyTextToClipboard('dnsName')">copy</div>
-<form action="{0}" method="post">
-    <input type="hidden" name="vmname" value="{1}">
-    <input type="submit" value="{2}">
-</form>
-<textarea id="contentToCopy" style="visibility:collapse"></textarea>
-
-<script>
-    {3}
-</script>
+﻿<div class="machine-section">
+    <div class="machine-name">{0}<!--machine name--></div>
+    <table>
+        <tr>
+            <td class="status">
+                Status
+            </td>
+            <td>
+                <span class="item-display">{1}<!--Power State--></span>
+            </td>
+        </tr>
+        <tr>
+            <td class="status">
+                DNS Name
+            </td>
+            <td>
+                <span class="item-display" id="dnsName-{0}">{2}<!--Full DNS Name--></span><img class="copy {7}" src="https://img.icons8.com/offices/16/000000/copy.png" onclick="copyTextToClipboard('dnsName-{0}')">
+            </td>
+        </tr>
+        <tr>
+            <td class="status">
+                IP Address
+            </td>
+            <td>
+                <span class="item-display" id="ipaddress-{0}">{3}<!--IP Address--></span><img class="copy {8}" src="https://img.icons8.com/offices/16/000000/copy.png" onclick="copyTextToClipboard('ipaddress-{0}')">
+            </td>
+        </tr>
+    </table>
+    <form action="{4}" method="post" style="visibility:{5};">
+        <!--4=Name of function to call: 5=show form only if vm is in stable state-->
+        <input type="hidden" name="vmname" value="{0}">
+        <input class="submit-button" type="submit" value="{6}"><!--5=Button Text-->
+    </form>
+</div>
 
