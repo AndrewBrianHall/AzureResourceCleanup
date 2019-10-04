@@ -30,8 +30,8 @@ namespace AzureResourceAutoManagement.Functions
                 vmName = values[1];
                 FunctionHelpers helper = new FunctionHelpers(nameof(GetVms), log, context);
                 AzureVmManager vmManager = AzureVmManager.CreateVmManagerInstance(helper);
-                success = await vmManager.ShutdownVmAsync(vmName);
-                message = $"{vmName} is stopping";
+                success = await vmManager.DeallocateVmAsync(vmName);
+                message = $"{vmName} is deallocating";
             }
             else
             {

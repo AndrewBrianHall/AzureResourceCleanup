@@ -66,7 +66,7 @@ namespace AzureResourceAutoManagement
 
         public static string FormatPowerState(PowerState powerState)
         {
-            return powerState.ToString().Replace("PowerState/", string.Empty);
+            return powerState != null ? powerState.ToString().Replace("PowerState/", string.Empty) : string.Empty;
         }
 
         protected static string GetFunctionAccessCode(HttpRequest req)
@@ -121,7 +121,7 @@ namespace AzureResourceAutoManagement
             if(machine.PowerState == PowerState.Running)
             {
                 action = nameof(StopVm);
-                buttonText = "Stop";
+                buttonText = "Deallocate";
                 qualifiedDnsName = ipAddress.Inner.DnsSettings != null ? ipAddress.Inner.DnsSettings.Fqdn : string.Empty;
                 dnsCopyDisplayClass = !string.IsNullOrEmpty(qualifiedDnsName) ? "visible" : dnsCopyDisplayClass;
                 displayIp = ipAddress.IPAddress;

@@ -129,7 +129,7 @@ namespace AzureResourceAutoManagement
             _helper.LogMessage($"Finished");
         }
 
-        internal async Task<bool> ShutdownVmAsync(string name)
+        internal async Task<bool> DeallocateVmAsync(string name)
         {
             var list = await GetVirtualMachinesAsync();
             var vm = list.Where(v => v.Name == name).FirstOrDefault();
@@ -137,7 +137,7 @@ namespace AzureResourceAutoManagement
             if (vm != null)
             {
 #pragma warning disable CS4014 //This will take a while, let it run async and continue no need to await it
-                vm.PowerOffAsync();
+                vm.DeallocateAsync();
 #pragma warning restore CS4014 
                 return true;
             }
