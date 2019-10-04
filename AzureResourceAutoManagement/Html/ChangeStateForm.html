@@ -14,7 +14,11 @@
                 DNS Name
             </td>
             <td>
-                <span class="item-display" id="dnsName-{0}">{2}<!--Full DNS Name--></span><img class="copy {7}" src="https://img.icons8.com/offices/16/000000/copy.png" onclick="copyTextToClipboard('dnsName-{0}')">
+                <span class="item-display" id="dnsName-{0}">{2}<!--Full DNS Name--></span>
+                <div class="tooltip" onmouseout="mouseOutOfCopy('dnsName-{0}-tip')">
+                    <img class="copy {7}" src="https://img.icons8.com/offices/16/000000/copy.png" onclick="copyTextToClipboard('dnsName-{0}')">
+                    <span class="tooltiptext" id="dnsName-{0}-tip">Copy to clipboard</span>
+                </div>
             </td>
         </tr>
         <tr>
@@ -22,7 +26,11 @@
                 IP Address
             </td>
             <td>
-                <span class="item-display" id="ipaddress-{0}">{3}<!--IP Address--></span><img class="copy {8}" src="https://img.icons8.com/offices/16/000000/copy.png" onclick="copyTextToClipboard('ipaddress-{0}')">
+                <span class="item-display" id="ipaddress-{0}">{3}<!--IP Address--></span>
+                <div class="tooltip" onmouseout="mouseOutOfCopy('ipaddress-{0}-tip')">
+                    <img class="copy {8}" src="https://img.icons8.com/offices/16/000000/copy.png" onclick="copyTextToClipboard('ipaddress-{0}')">
+                    <span class="tooltiptext" id="ipaddress-{0}-tip">Copy to clipboard</span>
+                </div>
             </td>
         </tr>
     </table>

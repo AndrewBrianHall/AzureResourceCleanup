@@ -5,39 +5,91 @@
     <meta charset="utf-8" />
     <title></title>
     <style>
-        .visible{
+        .visible {
             visibility: visible;
         }
-        .hidden{
+
+        .hidden {
             visibility: hidden;
         }
-        img.copy{
+
+        img.copy {
             height: 12px;
             width: 12px;
             margin-left: 5px;
+            cursor: pointer;
         }
-        span.item-display{
-            
+
+        span.item-display {
             color: darkblue;
         }
-        input.submit-button{
+
+        input.submit-button {
             margin-left: 25px;
         }
-        div.machine-name{
+
+        div.machine-name {
             font-weight: bold;
         }
-        div.machine-section{
+
+        div.machine-section {
             margin-top: 10px;
             margin-bottom: 15px;
         }
-        footer{
+
+        footer {
             font-size: 9px;
             position: absolute;
             bottom: 15px;
         }
-        table{
+
+        table {
             margin-left: 25px;
         }
+
+        /* Tooltip container */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+            /* Tooltip text */
+            .tooltip .tooltiptext {
+                visibility: hidden;
+                width: 120px;
+                background-color: #555;
+                color: #fff;
+                text-align: center;
+                padding: 5px 0;
+                border-radius: 6px;
+                /* Position the tooltip text */
+                position: absolute;
+                z-index: 1;
+                bottom: 125%;
+                left: 50%;
+                margin-left: -60px;
+                /* Fade in tooltip */
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+
+                /* Tooltip arrow */
+                .tooltip .tooltiptext::after {
+                    content: "";
+                    position: absolute;
+                    top: 100%;
+                    left: 50%;
+                    margin-left: -5px;
+                    border-width: 5px;
+                    border-style: solid;
+                    border-color: #555 transparent transparent transparent;
+                }
+
+            /* Show the tooltip text when you mouse over the tooltip container */
+            .tooltip:hover .tooltiptext {
+                visibility: visible;
+                opacity: 1;
+            }
     </style>
 </head>
 <body>
@@ -49,17 +101,53 @@
         {{main-content}}
     </div>
 
-    <textarea id="contentToCopy" style="visibility:collapse"></textarea>
     <script>
-        function copyTextToClipboard(elementName) {
-            var textToCopy = document.getElementById(elementName)
-            var copyText = document.getElementById('contentToCopy');
-            copyText.value = textToCopy.innerText;
-            copyText.select();
-            copyText.setSelectionRange(0, 99999); /*For mobile devices*/
 
-            /* Copy the text inside the text field */
-            document.execCommand("copy");
+        function copyAndPasteFallback(textToCopy) {
+            var textArea = document.createElement("textarea");
+            textArea.value = textToCopy;
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            //var copyText = document.getElementById('contentToCopy');
+            //copyText.value = textToCopy.innerText;
+            //copyText.select();
+            //copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+
+            ///* Copy the text inside the text field */
+            //document.execCommand("copy");
+
+            try {
+                var successful = document.execCommand('copy');
+                var msg = successful ? 'successful' : 'unsuccessful';
+                console.log('Fallback: Copying text command was ' + msg);
+                toolTip.innerText = "Copied";
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+                toolTip.innerText = "Oops! Couldn't copy";
+            }
+
+            document.body.removeChild(textArea);
+        }
+
+        function copyTextToClipboard(elementName) {
+            try {
+                var textToCopy = document.getElementById(elementName).innerText;
+                var toolTip = document.getElementById(elementName + "-tip");
+                navigator.clipboard.writeText(textToCopy);
+                console.log('Copied using clipboard API');
+                toolTip.innerText = "Copied";
+            }
+            catch (err) {
+                console.error('clipboard api failed, using fallback');
+                copyAndPasteFallback(textToCopy);
+            }
+        }
+
+        function mouseOutOfCopy(id) {
+            var tooltip = document.getElementById(id);
+            tooltip.innerText = "Copy to clipboard";
         }
     </script>
     <footer><a href="https://icons8.com/icon/XrLbcGHEeEFr/copy">Copy icon by Icons8</a></footer>
